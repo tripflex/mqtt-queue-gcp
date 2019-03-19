@@ -1,0 +1,33 @@
+author: Myles McNamara <myles@smyl.es>
+type: lib
+description: MQTT Queue system for Google Cloud Platform
+version: 1.0.0
+# platforms: [ cc3200, cc3220, esp32, esp8266 ]
+
+sources:
+  - src
+
+filesystem:
+  # - fs
+
+includes:
+  - include
+
+config_schema:
+  - [ "gcp", "o", {title: "GCP configuration"}]
+  - [ "gcp.queue", "o", {title: "GCP Queue configuration"}]
+  - [ "gcp.queue.enable", "b", true, {title: "Enable MQTT Queue on device boot (to process queue and set event handler on boot) "}]
+  - [ "gcp.queue.max", "i", 10, {title: "Maximum number of files to keep in queue (if queue exceeds this limit, oldest files will be overwritten)"}]
+  - [ "gcp.queue.delay", "i", 5, {title: "Delay between sending each queueud MQTT event upon reconnect"}]
+  - [ "gcp.queue.data", "s", "", {title: "Custom location to store queue files (only should be used if you have created ext partition that is mounted)"}]
+
+libs:
+  - origin: https://github.com/mongoose-os-libs/gcp
+
+tags:
+  - c
+  - mqtt
+  - gcp
+  - queue
+
+manifest_version: 2017-09-29
