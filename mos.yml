@@ -8,7 +8,7 @@ sources:
   - src
 
 filesystem:
-  # - fs
+  - fs
 
 includes:
   - include
@@ -16,6 +16,7 @@ includes:
 config_schema:
   - [ "gcp", "o", {title: "GCP configuration"}]
   - [ "gcp.queue", "o", {title: "GCP Queue configuration"}]
+  - [ "gcp.queue.data_path", "s", "", {title: "Data path (if using external flash) to store queue files (WITHOUT trailing slash)"}]
   - [ "gcp.queue.enable", "b", true, {title: "Enable MQTT Queue on device boot (to process queue and set event handler on boot) "}]
   - [ "gcp.queue.max", "i", 10, {title: "Maximum number of files to keep in queue (if queue exceeds this limit, oldest files will be overwritten)"}]
   - [ "gcp.queue.delay", "i", 5, {title: "Delay between sending each queueud MQTT event upon reconnect"}]

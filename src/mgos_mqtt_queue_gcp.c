@@ -17,6 +17,7 @@ static int s_max_queue = 10;
 static int s_current_queue_index = NULL;
 static bool s_processing_queue = false;
 static mgos_timer_id s_queue_timer_id = MGOS_INVALID_TIMER_ID;
+static const char *s_data_path = "";
 
 static void add_ev_handlers(void);
 static void remove_ev_handlers(void);
@@ -88,10 +89,11 @@ static void check_queue_timer_cb(void *arg) {
         return;
     }
 
-    char *queue_file = NULL;
-    char *queue_file_meta = NULL;
-    mg_asprintf(&queue_file, 0, "queue_%d.json", index );
-    mg_asprintf(&queue_file_meta, 0, "queue_%d_meta.json", index);
+    char *queue_file;
+    char *queue_file_meta;
+    mg_asprintf(&queue_file, 0, "%s/queue_%d.json", s_data_path, index);
+    mg_asprintf(&queue_file_meta, 0, "%s/queue_%d_meta.json", s_data_path, index);
+
     char *content = json_fread(queue_file);
     char *content_meta = json_fread(queue_file_meta);
 
@@ -161,11 +163,11 @@ static int add_to_queue(const char *json_fmt, va_list ap, const char *subfolder)
     LOG(LL_DEBUG, ("%s %u", "GCP MQTT QUEUE NOT CONNECTED, QUEUE FILE INDEX: ", next ));
 
     update_queue_index(next);
-    
+
     char *new_file = NULL;
     char *new_file_meta = NULL;
-    mg_asprintf(&new_file, 0, "queue_%d.json", next);
-    mg_asprintf(&new_file_meta, 0, "queue_%d_meta.json", next);
+    mg_asprintf(&new_file, 0, "%s/queue_%d.json", s_data_path, next);
+    mg_asprintf(&new_file_meta, 0, "%s/queue_%d_meta.json", s_data_path, next);
 
     LOG(LL_DEBUG, ("%s %s", "GCP MQTT QUEUE NOT CONNECTED, ADD TO FILE: ", new_file));
     int result = json_vfprintf((const char*) new_file, json_fmt, ap);
@@ -200,7 +202,9 @@ bool mgos_mqtt_queue_gcp_send_event_subf(const char *subfolder, const char *json
 }
 
 bool mgos_mqtt_queue_gcp_init(void){
-    
+    const char *dataPath = mgos_sys_config_get_gcp_queue_data_path();
+    s_data_path = (dataPath == NULL) ? "" : dataPath;
+
     // if( mgos_sys_config_mqttqgcp_enable() ){
     //     s_max_queue = mgos_sys_config_mqttqgcp_max();
         add_ev_handlers();
